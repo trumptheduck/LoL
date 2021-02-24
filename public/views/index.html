@@ -59,15 +59,17 @@
     </div>
     <script src="/views/pwa.js"></script>
     <script type="module">
-        window.addEventListener('touchstart',(ev)=>{console.log('')})
         import RenderingEngine from '../js/modules/engines/RenderingEngine.js'
         import Yasuo from '../assets/characters/Yasuo/constructor/Yasuo.js'
         import Platform from '../assets/map/platform/constructor/Platform.js'
         import Keyboard from '../js/modules/controllers/Keyboard.js'
         import Touchscreen from '../js/modules/controllers/Touchscreen.js'
         import '../public_modules/client-dist/socket.io.js'
+        function lerp(v0, v1, t) {
+            return v0*(1-t)+v1*t
+        }
         const socket = io()
-        const Renderer = new RenderingEngine(30)
+        const Renderer = new RenderingEngine(35)
         class Viewport {
             constructor(canvas) {
                 this.pos = {
@@ -76,7 +78,7 @@
                 }
                 this.canvas = canvas;
                 this.follow = (object) => {
-                    this.pos.x = -object.pos.x+canvas.width/2
+                    this.pos.x = lerp(this.pos.x,-object.pos.x+canvas.width/2,0.2)
                 }
             }
         }
@@ -142,7 +144,7 @@
             console.log(keyboard)
         Renderer.render = function() {
             touchscreen.update()
-            keyboard.logParam = function() {console.log(keyboard)}
+            keyboard.logParam = function() {console.log(player)}
             viewport.follow(player)
             canvas.clear()
             canvas.render()
