@@ -7,8 +7,8 @@ export default class Platform {
             platform : new Image()
         }
         this.assets.platform.src = '/assets/map/platform/anim/rift-platform.png'
-        this.render = () => {
-            this.canvas.context.drawImage()
+        this.render = (offset={x:0,y:0}) => {
+            this.canvas.context.drawImage(this.assets.platform,this.pos.x+offset.x,this.pos.y+offset.y)
         }
     }
 }

@@ -11,7 +11,7 @@ export default class Yasuo {
         this.canvas = null;
         this.pos = {
             x: 100,
-            y: 630,
+            y: 600,
         }
         this.scale = {
             x: -1,
@@ -22,7 +22,7 @@ export default class Yasuo {
             isLeft : false,
             isCasting: false
         }
-        this.size = 550
+        this.size = 750
         this.attrs = {
             speed : 15,
             health : 580,
@@ -160,6 +160,13 @@ export default class Yasuo {
         this.cancelAnimation = () => {
             if (this.frame >= this.animation.idleFrames) {
                 this.state.isCasting = false;
+                if (this.animation.isMultiple) {
+                    if (this.animation.index === 0) {
+                        this.animation.index = 1
+                    } else {
+                        this.animation.index = 0
+                    }
+                }
             }
         }
         this.action = {
@@ -170,7 +177,9 @@ export default class Yasuo {
                 this.animation = this.animations.move;
             },
             attack: () => {
-                this.animation = this.animations.attack;
+                if (!this.isCasting) {
+                    this.animation = this.animations.attack;
+                }
             },
         }
         this.doLogics = () => {
@@ -222,18 +231,10 @@ export default class Yasuo {
             this.doMechanics()
             if (this.frame >= this.animation.maxFrames-1) {
                 this.frame = 0;
-                if (this.animation.isMultiple) {
-                    if (this.animation.index === 0) {
-                        this.animation.index = 1
-                    } else {
-                        this.animation.index = 0
-                    }
-                }
                 if (!this.animation.loop) {this.animation = this.animations.idle}
             } else {
                 this.frame++
             }
-            this.canvas.context.strokeRect(this.pos.x-this.hitbox.dim.x/2,this.pos.y-this.hitbox.dim.y/2,this.hitbox.dim.x,this.hitbox.dim.y)
             this.canvas.context.save();
             this.canvas.context.translate(this.pos.x+offset.x, this.pos.y+offset.y);
             this.canvas.context.scale(this.scale.x, this.scale.y);

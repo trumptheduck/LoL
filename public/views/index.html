@@ -11,32 +11,72 @@
     <style>
         body {
             margin: 0px;
-        }
-        canvas {
-            background-color: transparent;
+            overscroll-behavior: none;
+            overflow: hidden;
         }
         #container {
-            background-image: url('/assets/mock.jpg');
-            background-size: contain;
-            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
         }
+        .slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 200px; /* Full-width */
+    height: 40px; /* Specified height */
+    border-radius: 10px;
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.2; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+    }
+
+    /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+    .slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 70px; /* Set a specific slider handle width */
+    height: 70px; /* Slider handle height */
+    border-radius: 70px;
+    background: grey; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+    }
+
+    .slider::-moz-range-thumb {
+    width: 70px; /* Set a specific slider handle width */
+    height: 70px; /* Slider handle height */
+    border-radius: 70px;
+    background: grey; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+    }
     </style>
 </head>
 <body>
-    <div id="container"></div>
+    <div id="ui-layer" style="position: absolute; width: 100%; height: 100%;">
+    </div>
+    <div id="container">
+        <button style="position: absolute; display: none;">Active</button>
+    </div>
     <script src="/views/pwa.js"></script>
     <script type="module">
+        window.addEventListener('touchstart',(ev)=>{console.log('')})
         import RenderingEngine from '../js/modules/engines/RenderingEngine.js'
         import Yasuo from '../assets/characters/Yasuo/constructor/Yasuo.js'
+        import Platform from '../assets/map/platform/constructor/Platform.js'
         import Keyboard from '../js/modules/controllers/Keyboard.js'
+        import Touchscreen from '../js/modules/controllers/Touchscreen.js'
         import '../public_modules/client-dist/socket.io.js'
         const socket = io()
-        const Renderer = new RenderingEngine(25)
+        const Renderer = new RenderingEngine(30)
         class Viewport {
-            constructor() {
+            constructor(canvas) {
                 this.pos = {
                     x: 0,
                     y: 0,
+                }
+                this.canvas = canvas;
+                this.follow = (object) => {
+                    this.pos.x = -object.pos.x+canvas.width/2
                 }
             }
         }
@@ -52,6 +92,12 @@
                     this.context = this.element.getContext('2d');
                     this.element.width = 1920;
                     this.element.height = 980;
+                    this.element.style.width = '100%';
+                    this.element.style.height = '100%';
+                    this.element.style.backgroundImage = "url('/assets/rift.jpg')";
+                    this.element.style.backgroundSize = "cover"
+                    this.element.style.backgroundRepeat = "no-repeat"
+
                 }
                 add(item) {
                     this.scene.push(item)
@@ -74,11 +120,16 @@
                 }
             }
             const container = document.getElementById('container')
-            var viewport = new Viewport()
+            const ui = document.getElementById('ui-layer')
             var canvas = new Canvas(container);
+            var viewport = new Viewport(canvas)
             canvas.viewport = viewport;
             var keyboard = new Keyboard()
-            var player = new Yasuo(keyboard)
+            var touchscreen = new Touchscreen(ui)
+            touchscreen.connect()
+            var player = new Yasuo(touchscreen)
+            var platform = new Platform({x: -1000,y: 670})
+            canvas.add(platform)
             canvas.add(player)
             console.log(player)
             keyboard.connect()
@@ -90,7 +141,9 @@
             }
             console.log(keyboard)
         Renderer.render = function() {
+            touchscreen.update()
             keyboard.logParam = function() {console.log(keyboard)}
+            viewport.follow(player)
             canvas.clear()
             canvas.render()
         }

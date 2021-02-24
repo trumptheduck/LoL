@@ -28,5 +28,9 @@
     "display": "fullscreen",
     "theme_color": "#ffffff",
     "background_color": "#ffffff",
-    "orientation": "landscape"
+    "orientation": "landscape",
+    "related_applications": [{
+        "platform": "webapp",
+        "url": "https://nodeapp.tech/views/pwa.webmanifest"
+    }]
   }
