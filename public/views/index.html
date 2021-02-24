@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <link rel="manifest" href="/views/pwa.webmanifest">
+        <link rel="apple-touch-icon" href="/assets/icon-256x256.png">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff"/>
+        <title>Page Title</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {
+            margin: 0px;
+        }
+        canvas {
+            background-color: transparent;
+        }
+        #container {
+            background-image: url('/assets/mock.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script src="/views/pwa.js"></script>
+    <script type="module">
+        import RenderingEngine from '../js/modules/engines/RenderingEngine.js'
+        import Yasuo from '../assets/characters/Yasuo/constructor/Yasuo.js'
+        import Keyboard from '../js/modules/controllers/Keyboard.js'
+        import '../public_modules/client-dist/socket.io.js'
+        const socket = io()
+        const Renderer = new RenderingEngine(25)
+        class Viewport {
+            constructor() {
+                this.pos = {
+                    x: 0,
+                    y: 0,
+                }
+            }
+        }
+        class Canvas {
+                constructor(container){
+                    this.scene = []
+                    this.viewport = null;
+                    this.id = `canvas-${Math.random()}`
+                    this.width = 1920;
+                    this.height = 980;
+                    document.getElementById(container.id).innerHTML += `<canvas id="${this.id}" style="width: 100%; height: 100%;"></canvas>`
+                    this.element = document.getElementById(this.id)
+                    this.context = this.element.getContext('2d');
+                    this.element.width = 1920;
+                    this.element.height = 980;
+                }
+                add(item) {
+                    this.scene.push(item)
+                    item.canvas = this
+                }
+                remove(item) {
+                   var objectToRemove = this.scene.find(object => object.uuid === item.uuid);
+                   if (objectToRemove !== undefined) {
+                    this.scene.splice(this.scene.indexOf(objectToRemove),1)
+                   }
+
+                }
+                clear() {
+                    this.context.clearRect(0,0,this.width,this.height)
+                }
+                render() {
+                    this.scene.forEach(item => {
+                        item.render(this.viewport.pos)
+                    })
+                }
+            }
+            const container = document.getElementById('container')
+            var viewport = new Viewport()
+            var canvas = new Canvas(container);
+            canvas.viewport = viewport;
+            var keyboard = new Keyboard()
+            var player = new Yasuo(keyboard)
+            canvas.add(player)
+            console.log(player)
+            keyboard.connect()
+            keyboard.action.vpLeft = () => {
+                viewport.pos.x -= 100;
+            }
+            keyboard.action.vpRight = () => {
+                viewport.pos.x += 100;
+            }
+            console.log(keyboard)
+        Renderer.render = function() {
+            keyboard.logParam = function() {console.log(keyboard)}
+            canvas.clear()
+            canvas.render()
+        }
+        Renderer.startAnimating()
+    </script>
+</body>
+</html>
