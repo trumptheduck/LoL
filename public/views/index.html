@@ -60,6 +60,11 @@
     <div id="pre-processing"></div>
     <script src="/views/pwa.js"></script>
     <script type="module">
+        import 'https://cdn.jsdelivr.net/npm/@pwabuilder/pwaupdate';
+        const el = document.createElement('pwa-update');
+        document.body.appendChild(el);
+    </script>
+    <script type="module">
         import RenderingEngine from '../js/modules/engines/RenderingEngine.js'
         import Yasuo from '../assets/characters/Yasuo/constructor/Yasuo.js'
         import Platform from '../assets/map/platform/constructor/Platform.js'
