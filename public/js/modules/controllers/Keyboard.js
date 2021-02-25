@@ -33,6 +33,7 @@ export default class Keyboard {
         this.logger = () => {
             this.logParam()
         }
+        this.logParam2 = () => {}
     };
     connect() {
         document.addEventListener('keydown',(e)=> {
@@ -67,7 +68,7 @@ export default class Keyboard {
                     this.action.vpRight();
                 break;
                 case this.binding.jump:
-                    this.state.jump = true;
+                    this.logParam2();
                 break;
                 case this.binding.log:
                     this.logger()

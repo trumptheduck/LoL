@@ -1,3 +1,5 @@
+import Healthbar from "/assets/ui/healthbar/constructor/Healthbar.js";
+
 export default class Yasuo {
     constructor (controller) {
         this.uuid = `object-${Math.random()}` 
@@ -11,7 +13,7 @@ export default class Yasuo {
         this.canvas = null;
         this.pos = {
             x: 100,
-            y: 600,
+            y: 750,
         }
         this.scale = {
             x: -1,
@@ -31,43 +33,132 @@ export default class Yasuo {
         this.prevAnim = null;
         this.frame = 0;
         this.animation = null;
+        this.healthbar = new Healthbar()
         this.assets = {
-            move : new Image(),
-            idle: new Image(),
-            aa1 : new Image(),
-            aa2 : new Image(),
-            q1 : new Image(),
-            q2 : new Image(),
-            q3 : new Image(),
-            w : new Image(),
-            e : new Image(),
-            r : new Image(),
-            dead : new Image(),
+            high: {
+                move : new Image(),
+                idle: new Image(),
+                aa1 : new Image(),
+                aa2 : new Image(),
+                q1 : new Image(),
+                q2 : new Image(),
+                q3 : new Image(),
+                w : new Image(),
+                e : new Image(),
+                r : new Image(),
+                dead : new Image(),
+            },
+            medium: {
+                move : new Image(),
+                move : new Image(),
+                idle: new Image(),
+                aa1 : new Image(),
+                aa2 : new Image(),
+                q1 : new Image(),
+                q2 : new Image(),
+                q3 : new Image(),
+                w : new Image(),
+                e : new Image(),
+                r : new Image(),
+                dead : new Image(),
+            },
+            low: {
+                move : new Image(),
+                idle: new Image(),
+                aa1 : new Image(),
+                aa2 : new Image(),
+                q1 : new Image(),
+                q2 : new Image(),
+                q3 : new Image(),
+                w : new Image(),
+                e : new Image(),
+                r : new Image(),
+                dead : new Image(),
+            }
         }
+        this.loadAssets = () => {
+            this.assets.high.move.src = '/assets/characters/Yasuo/anim/high/run.png'
+            this.assets.high.idle.src = '/assets/characters/Yasuo/anim/high/idle.png'
+            this.assets.high.aa1.src = '/assets/characters/Yasuo/anim/high/aa1.png'
+            this.assets.high.aa2.src = '/assets/characters/Yasuo/anim/high/aa2.png'
+            this.assets.high.q1.src = '/assets/characters/Yasuo/anim/high/q1.png'
+            this.assets.high.q2.src = '/assets/characters/Yasuo/anim/high/q2.png'
+            this.assets.high.q3.src = '/assets/characters/Yasuo/anim/high/q3.png'
+            this.assets.high.w.src = '/assets/characters/Yasuo/anim/high/w.png'
+            this.assets.high.e.src = '/assets/characters/Yasuo/anim/high/e.png'
+            this.assets.high.r.src = '/assets/characters/Yasuo/anim/high/r.png'
+            this.assets.high.dead.src = '/assets/characters/Yasuo/anim/high/dead.png'
+            this.assets.medium.move.src = '/assets/characters/Yasuo/anim/medium/run.png'
+            this.assets.medium.idle.src = '/assets/characters/Yasuo/anim/medium/idle.png'
+            this.assets.medium.aa1.src = '/assets/characters/Yasuo/anim/medium/aa1.png'
+            this.assets.medium.aa2.src = '/assets/characters/Yasuo/anim/medium/aa2.png'
+            this.assets.medium.q1.src = '/assets/characters/Yasuo/anim/medium/q1.png'
+            this.assets.medium.q2.src = '/assets/characters/Yasuo/anim/medium/q2.png'
+            this.assets.medium.q3.src = '/assets/characters/Yasuo/anim/medium/q3.png'
+            this.assets.medium.w.src = '/assets/characters/Yasuo/anim/medium/w.png'
+            this.assets.medium.e.src = '/assets/characters/Yasuo/anim/medium/e.png'
+            this.assets.medium.r.src = '/assets/characters/Yasuo/anim/medium/r.png'
+            this.assets.medium.dead.src = '/assets/characters/Yasuo/anim/medium/dead.png'
+            this.assets.low.move.src = '/assets/characters/Yasuo/anim/low/run.png'
+            this.assets.low.idle.src = '/assets/characters/Yasuo/anim/low/idle.png'
+            this.assets.low.aa1.src = '/assets/characters/Yasuo/anim/low/aa1.png'
+            this.assets.low.aa2.src = '/assets/characters/Yasuo/anim/low/aa2.png'
+            this.assets.low.q1.src = '/assets/characters/Yasuo/anim/low/q1.png'
+            this.assets.low.q2.src = '/assets/characters/Yasuo/anim/low/q2.png'
+            this.assets.low.q3.src = '/assets/characters/Yasuo/anim/low/q3.png'
+            this.assets.low.w.src = '/assets/characters/Yasuo/anim/low/w.png'
+            this.assets.low.e.src = '/assets/characters/Yasuo/anim/low/e.png'
+            this.assets.low.r.src = '/assets/characters/Yasuo/anim/low/r.png'
+            this.assets.low.dead.src = '/assets/characters/Yasuo/anim/low/dead.png'
+        }
+        this.loadAssets()
         this.sfx = {
-            attack : new Audio('/assets/characters/Yasuo/audio/auto.mp3'),
-            hit : new Audio('/assets/characters/Yasuo/audio/hit.mp3'),
+            attack : new Audio('/assets/characters/Yasuo/audio/auto.ogg'),
+            hit : new Audio('/assets/characters/Yasuo/audio/hit.ogg'),
             walk : new Audio('/assets/characters/Yasuo/audio/walk.mp3'),
         }
+        this.sfx.attack.preload = 'auto';
         this.voiceline = {
             movement1 : new Audio('/assets/characters/Yasuo/audio/m1.mp3'),
             movement2 : new Audio('/assets/characters/Yasuo/audio/m2.mp3'),
             movement3 : new Audio('/assets/characters/Yasuo/audio/m3.mp3'),
+            aav1 : new Audio('/assets/characters/Yasuo/audio/aav1.mp3'),
+            aav2 : new Audio('/assets/characters/Yasuo/audio/aav2.mp3'),
+            aav3 : new Audio('/assets/characters/Yasuo/audio/aav3.mp3'),
+            aav4 : new Audio('/assets/characters/Yasuo/audio/aav4.mp3'),
         }
         this.voiceline.movement1.volume = 0.5;
         this.voiceline.movement2.volume = 0.5;
         this.voiceline.movement3.volume = 0.5;
-        this.assets.move.src = '/assets/characters/Yasuo/anim/run.png'
-        this.assets.idle.src = '/assets/characters/Yasuo/anim/idle.png'
-        this.assets.aa1.src = '/assets/characters/Yasuo/anim/aa1.png'
-        this.assets.aa2.src = '/assets/characters/Yasuo/anim/aa2.png'
-        this.assets.q1.src = '/assets/characters/Yasuo/anim/q1.png'
-        this.assets.q2.src = '/assets/characters/Yasuo/anim/q2.png'
-        this.assets.q3.src = '/assets/characters/Yasuo/anim/q3.png'
-        this.assets.w.src = '/assets/characters/Yasuo/anim/w.png'
-        this.assets.e.src = '/assets/characters/Yasuo/anim/e.png'
-        this.assets.r.src = '/assets/characters/Yasuo/anim/r.png'
-        this.assets.dead.src = '/assets/characters/Yasuo/anim/dead.png'
+        this.changeGraphics = (mode) => {
+            switch (mode) {
+                case 1:
+                    this.asset = this.assets.low
+                    break;
+                case 2:
+                    this.asset = this.assets.medium
+                    break;
+                case 3:
+                    this.asset = this.assets.high
+                    break;
+            }
+        }
+        this.playSound = {
+            attack: () => {
+                var prob = Math.round(Math.random()*100);
+                if (prob < 15) {
+                    this.voiceline.aav1.currentTime = 0;
+                    this.voiceline.aav1.play()
+                } else if (prob > 30&&prob < 45) {
+                    this.voiceline.aav2.currentTime = 0;
+                    this.voiceline.aav2.play()
+                } else if (prob > 85) {
+                    this.voiceline.aav3.currentTime = 0;
+                    this.voiceline.aav3.play()
+                }
+            }
+        }
+        this.changeGraphics(2);
         this.animations = {
             idle: {
                 audio: null,
@@ -75,11 +166,11 @@ export default class Yasuo {
                 idleFrames: 0,
                 name: 'idle',
                 loop: true,
-                size: 800,
                 isMultiple : false,
-                sprites: [this.assets.idle],
+                sprites: [this.asset.idle],
                 maxFrames: 30,
                 index: 0,
+                voiceline : null,
             },
             move: {
                 audio: this.sfx.walk,
@@ -87,11 +178,11 @@ export default class Yasuo {
                 idleFrames: 0,
                 name: 'move',
                 loop: true,
-                size: 800,
                 isMultiple : false,
-                sprites: [this.assets.move],
+                sprites: [this.asset.move],
                 maxFrames: 19,
                 index: 0,
+                voiceline : null,
             },
             attack: {
                 audio: this.sfx.attack,
@@ -99,11 +190,11 @@ export default class Yasuo {
                 idleFrames: 15,
                 name: 'attack',
                 loop: true,
-                size: 800,
                 isMultiple : true,
-                sprites: [this.assets.aa1,this.assets.aa2],
+                sprites: [this.asset.aa1,this.asset.aa2],
                 maxFrames: 20,
                 index: 0,
+                voiceline : this.playSound.attack,
             },
             q1: {
                 audio: null,
@@ -111,11 +202,11 @@ export default class Yasuo {
                 idleFrames: 15,
                 name: 'q1',
                 loop: false,
-                size: 800,
                 isMultiple : false,
-                sprites: [this.assets.q1],
+                sprites: [this.asset.q1],
                 maxFrames: 20,
                 index: 0,
+                voiceline : null,
             },
             q2: {
                 audio: null,
@@ -123,11 +214,11 @@ export default class Yasuo {
                 idleFrames: 15,
                 name: 'q2',
                 loop: false,
-                size: 800,
                 isMultiple : false,
-                sprites: [this.assets.q2],
+                sprites: [this.asset.q2],
                 maxFrames: 20,
                 index: 0,
+                voiceline : null,
             },
             q3: {
                 audio: null,
@@ -135,11 +226,11 @@ export default class Yasuo {
                 idleFrames: 15,
                 name: 'q3',
                 loop: false,
-                size: 800,
                 isMultiple : false,
-                sprites: [this.assets.q3],
+                sprites: [this.asset.q3],
                 maxFrames: 20,
                 index: 0,
+                voiceline : null,
             },
             w: {
                 audio: null,
@@ -147,11 +238,11 @@ export default class Yasuo {
                 idleFrames: 15,
                 name: 'w',
                 loop: false,
-                size: 800,
                 isMultiple : false,
-                sprites: [this.assets.w],
+                sprites: [this.asset.w],
                 maxFrames: 17,
                 index: 0,
+                voiceline : null,
             },
             e: {
                 audio: null,
@@ -159,11 +250,11 @@ export default class Yasuo {
                 idleFrames: 15,
                 name: 'e',
                 loop: false,
-                size: 800,
                 isMultiple : false,
-                sprites: [this.assets.e],
+                sprites: [this.asset.e],
                 maxFrames: 20,
                 index: 0,
+                voiceline : null,
             },
             r: {
                 audio: null,
@@ -171,11 +262,11 @@ export default class Yasuo {
                 idleFrames: 25,
                 name: 'r',
                 loop: false,
-                size: 900,
                 isMultiple : false,
-                sprites: [this.assets.r],
+                sprites: [this.asset.r],
                 maxFrames: 24,
                 index: 0,
+                voiceline : null,
             },
             dead: {
                 audio: null,
@@ -183,11 +274,11 @@ export default class Yasuo {
                 idleFrames: 31,
                 name: 'dead',
                 loop: false,
-                size: 800,
                 isMultiple : false,
-                sprites: [this.assets.dead],
+                sprites: [this.asset.dead],
                 maxFrames: 30,
                 index: 0,
+                voiceline : null,
             },
         },
         this.animation = this.animations.attack;
@@ -197,34 +288,19 @@ export default class Yasuo {
                 this.state.isAttacking = false;
             }
         }
-        this.action = {
-            idle: () => {
-                this.animation = this.animations.idle;
-            },
-            move: () => {
-                this.animation = this.animations.move;
-            },
-            attack: () => {
-                if (!this.isCasting) {
-                    this.isAttacking = true;
-                }
-            },
-        }
         this.doLogics = () => {
             if (this.state.isMoving) {
-                if (Math.random() < 0.006) {
-                    var probablitily = Math.random();
-                    if (probablitily < 0.2) {
+                    var probablitily = Math.round(Math.random()*1000);
+                    if (probablitily < 3) {
                         this.voiceline.movement1.currentTime = 0;
                         this.voiceline.movement1.play()
-                    } else if (probablitily < 0.5&&probablitily >0.3) {
+                    } else if (probablitily < 100&&probablitily >103) {
                         this.voiceline.movement2.currentTime = 0;
                         this.voiceline.movement2.play()
-                    } else if (probablitily < 0.8&&probablitily >0.6) {
+                    } else if (probablitily < 297&&probablitily >300) {
                         this.voiceline.movement3.currentTime = 0;
                         this.voiceline.movement3.play()
                     } else {}
-                }
             }
             if (this.prevAnim !== this.animation.name) {
                 this.frame = 0;
@@ -245,6 +321,13 @@ export default class Yasuo {
                 this.state.isMoving = false;
             }
         }
+        this.skillIcons = {
+            skill1:'/assets/characters/Yasuo/icons/icon-q1.png',
+            skill2:'/assets/characters/Yasuo/icons/icon-w.jpeg',
+            skill3:'/assets/characters/Yasuo/icons/icon-e.jpg',
+            skill4:'/assets/characters/Yasuo/icons/icon-r.jpg',
+        }
+        this.controller.updateSkillIcons(this.skillIcons)
         this.controller.action.attack = () => {
             this.cancelAnimation()
             this.animation = this.animations.attack;
@@ -252,6 +335,18 @@ export default class Yasuo {
         }
         this.controller.action.move = () => {
             this.cancelAnimation()
+        }
+        this.controller.action.skill1 = () => {
+            this.changeGraphics(1)
+        }
+        this.controller.action.skill2 = () => {
+            this.changeGraphics(2)
+        }
+        this.controller.action.skill3 = () => {
+            this.changeGraphics(3)
+        }
+        this.controller.action.skill4 = () => {
+            this.canvas.add(this)
         }
         this.doMechanics = () => {
             if (!this.state.isCasting) {
@@ -278,6 +373,7 @@ export default class Yasuo {
             
         }
         this.render = (offset={x:0,y:0})=>{
+            
             this.doLogics()
             this.doMechanics()
             if (this.frame >= this.animation.maxFrames-1) {
@@ -300,7 +396,6 @@ export default class Yasuo {
 
             } else {
                 if (this.frame === 0) {
-                    console.log(this.state.isMoving)
                     if (this.animation.hitFrame === false) {
                         this.animation.audio.loop = true;
                         this.animation.audio.play()
@@ -309,6 +404,9 @@ export default class Yasuo {
                     }
                 } else if (this.frame === this.animation.hitFrame) {
                     if (this.animation.hitFrame !== false) {
+                        if (this.animation.voiceline !== null) {
+                            this.animation.voiceline()
+                        }
                         this.animation.audio.play()
                     }
                 }
@@ -316,8 +414,15 @@ export default class Yasuo {
             this.canvas.context.save();
             this.canvas.context.translate(this.pos.x+offset.x, this.pos.y+offset.y);
             this.canvas.context.scale(this.scale.x, this.scale.y);
-            this.canvas.context.drawImage(this.animation.sprites[this.animation.index], this.animation.size*this.frame, 0,this.animation.size,this.animation.size,-this.size/2, -this.size/2,this.size, this.size);
+            this.canvas.context.drawImage(this.animation.sprites[this.animation.index], this.animation.sprites[this.animation.index].height*this.frame, 0,this.animation.sprites[this.animation.index].height,this.animation.sprites[this.animation.index].height,-this.size/2, -this.size/2,this.size, this.size);
             this.canvas.context.restore();
+            this.healthbar.canvas = this.canvas
+            this.healthbar.render(this.pos,offset,185)
         }
-    }
+        this.selfDestruct = () => {
+            for (const property in this) {
+                eval(`delete this.${property}`)
+              }
+        }
+    } 
 }

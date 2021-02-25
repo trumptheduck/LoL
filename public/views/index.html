@@ -57,11 +57,14 @@
     <div id="container">
         <button style="position: absolute; display: none;">Active</button>
     </div>
+    <div id="pre-processing"></div>
     <script src="/views/pwa.js"></script>
     <script type="module">
         import RenderingEngine from '../js/modules/engines/RenderingEngine.js'
         import Yasuo from '../assets/characters/Yasuo/constructor/Yasuo.js'
         import Platform from '../assets/map/platform/constructor/Platform.js'
+        import Nexus from '../assets/map/nexus/constructor/Nexus.js'
+        import Turret from '../assets/map/turret/constructor/Turret.js'
         import Keyboard from '../js/modules/controllers/Keyboard.js'
         import Touchscreen from '../js/modules/controllers/Touchscreen.js'
         import '../public_modules/client-dist/socket.io.js'
@@ -69,7 +72,7 @@
             return v0*(1-t)+v1*t
         }
         const socket = io()
-        const Renderer = new RenderingEngine(35)
+        const Renderer = new RenderingEngine(30)
         class Viewport {
             constructor(canvas) {
                 this.pos = {
@@ -82,18 +85,32 @@
                 }
             }
         }
+        class Game {
+            constructor(data) {
+                this.data = data;
+                this.soundtrack = new Audio('/assets/soundtrack/rift.mp3')
+                this.playSound = {
+                    soundtrack: () => {
+                        this.soundtrack.volume = 0.5;
+                        this.soundtrack.loop = true;
+                        this.soundtrack.play()
+                    }
+                }
+            }   
+        }
         class Canvas {
                 constructor(container){
                     this.scene = []
                     this.viewport = null;
                     this.id = `canvas-${Math.random()}`
                     this.width = 1920;
-                    this.height = 980;
+                    this.height = 1100;
+                    this.container = container
                     document.getElementById(container.id).innerHTML += `<canvas id="${this.id}" style="width: 100%; height: 100%;"></canvas>`
                     this.element = document.getElementById(this.id)
                     this.context = this.element.getContext('2d');
                     this.element.width = 1920;
-                    this.element.height = 980;
+                    this.element.height = 1100;
                     this.element.style.width = '100%';
                     this.element.style.height = '100%';
                     this.element.style.backgroundImage = "url('/assets/rift.jpg')";
@@ -120,36 +137,60 @@
                         item.render(this.viewport.pos)
                     })
                 }
+                selfDestruct() {
+                    this.container.removeChild(this.element)
+                    for (const property in this) {
+                        eval(`delete this.${property}`)
+                    }
+                }
             }
             const container = document.getElementById('container')
             const ui = document.getElementById('ui-layer')
-            var canvas = new Canvas(container);
-            var viewport = new Viewport(canvas)
-            canvas.viewport = viewport;
-            var keyboard = new Keyboard()
-            var touchscreen = new Touchscreen(ui)
-            touchscreen.connect()
-            var player = new Yasuo(touchscreen)
-            var platform = new Platform({x: -1000,y: 670})
-            canvas.add(platform)
-            canvas.add(player)
-            console.log(player)
-            keyboard.connect()
-            keyboard.action.vpLeft = () => {
-                viewport.pos.x -= 100;
+            var canvas,viewport,keyboard,touchscreen,player,platform,nexus,turretL,turretR
+            var game = new Game(1)
+            function load() {
+                canvas = new Canvas(container);
+                viewport = new Viewport(canvas)
+                canvas.viewport = viewport;
+                keyboard = new Keyboard()
+                touchscreen = new Touchscreen(ui)
+                touchscreen.connect()
+                player = new Yasuo(touchscreen)
+                platform = new Platform({x: -2250,y: 800})
+                nexus = new Nexus({x: 0,y: 700})
+                turretL = new Turret({x: -700,y: 650})
+                turretR = new Turret({x: 700,y: 650})
+                canvas.add(platform)
+                canvas.add(nexus)
+                canvas.add(turretL)
+                canvas.add(turretR)
+                canvas.add(player)
+                keyboard.connect()
+                Renderer.startAnimating()
             }
-            keyboard.action.vpRight = () => {
-                viewport.pos.x += 100;
-            }
-            console.log(keyboard)
+            load()
+            function unload() {
+                Renderer.stopAnimating()
+                canvas.selfDestruct()
+                canvas = null;
+                viewport = null;
+                platform = null;
+                player.selfDestruct()
+                player = null;         
+                keyboard = null;
+                touchscreen.selfDestruct()
+                touchscreen = null;
+            }   
+            keyboard.logParam = function() {game.playSound.soundtrack()}
+            keyboard.logParam2 = function() {load()} 
         Renderer.render = function() {
+            game.playSound.soundtrack()
             touchscreen.update()
-            keyboard.logParam = function() {console.log(player)}
             viewport.follow(player)
             canvas.clear()
             canvas.render()
         }
-        Renderer.startAnimating()
+        
     </script>
 </body>
 </html>

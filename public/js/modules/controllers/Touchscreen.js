@@ -26,6 +26,12 @@ export default class Touchscreen {
             moveRight: false,
             jump: false,
         }
+        this.updateSkillIcons = (icons) => {
+            this.binding.skill1.style.backgroundImage = `url('${icons.skill1}')`
+            this.binding.skill2.style.backgroundImage = `url('${icons.skill2}')`
+            this.binding.skill3.style.backgroundImage = `url('${icons.skill3}')`
+            this.binding.skill4.style.backgroundImage = `url('${icons.skill4}')`
+        }
         this.action = {
             move: ()=>{},
             attack: ()=>{},
@@ -84,5 +90,11 @@ export default class Touchscreen {
             this.state.moveRight = false;
             this.state.moveLeft = false;
         }
+    }
+    selfDestruct() {
+        this.container.innerHTML = '';
+        for (const property in this) {
+            eval(`delete this.${property}`)
+          }
     }
 }

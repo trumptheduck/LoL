@@ -8,7 +8,9 @@ export default class RenderingEngine {
         //Initialize the timer variables and start the animation
         this.render = () => {};
         this.frame = () => {
-            requestAnimationFrame(this.frame);
+            if (this.stop === false) {
+                requestAnimationFrame(this.frame);
+            }
             this.now = Date.now();
             this.elapsed = this.now - this.then;
             if (this.elapsed > this.fpsInterval) {
@@ -17,10 +19,14 @@ export default class RenderingEngine {
             }
         }
         this.startAnimating = () =>{
+            this.stop = false;
             this.fpsInterval = 1000 / fps;
             this.then = Date.now();
             this.startTime = this.then;
             this.frame();
+        }
+        this.stopAnimating = () => {
+            this.stop = true;
         }
         
 }
