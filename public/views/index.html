@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="manifest" href="/views/pwa.webmanifest">
+    <link rel="apple-touch-icon" href="/assets/icon-256x256.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff"/>
         <title>RTD</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
@@ -199,6 +203,12 @@
             canvas.render()
         }
         
+    </script>
+    <script src="/views/pwa.js"></script>
+    <script type="module">
+        import 'https://cdn.jsdelivr.net/npm/@pwabuilder/pwaupdate';
+        const el = document.createElement('pwa-update');
+        document.body.appendChild(el);
     </script>
 </body>
 </html>
