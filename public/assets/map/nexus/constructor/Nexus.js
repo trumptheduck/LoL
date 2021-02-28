@@ -1,15 +1,14 @@
-import Healthbar from "/assets/ui/healthbar/constructor/Healthbar.js";
-
-export default class Nexus {
+class Nexus {
     constructor (pos ={x:0,y:0}) {
         this.uuid = `object-${Math.random()}`;
         this.canvas = null;
         this.pos = pos;
+        this.isAffectedByPhysics = false;
         this.healthbar = new Healthbar()
         this.assets = {
             platform : new Image()
         }
-        this.assets.platform.src = '/assets/map/nexus/anim/nexus.png'
+        this.assets.platform.src = '../assets/map/nexus/anim/nexus.png'
         this.render = (offset={x:0,y:0}) => {
             this.canvas.context.save()
             this.canvas.context.translate(this.pos.x+offset.x, this.pos.y+offset.y);

@@ -1,4 +1,4 @@
-export default class Keyboard {
+class Keyboard {
     constructor () {
         this.binding = {
             moveLeft: "ArrowLeft",

@@ -1,4 +1,4 @@
-export default class RenderingEngine {
+class RenderingEngine {
     constructor (fps) {
         this.fps = fps;
         //Make a function to update the renderer and animate it with FPS throttling             

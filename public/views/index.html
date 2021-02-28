@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-        <link rel="manifest" href="/views/pwa.webmanifest">
-        <link rel="apple-touch-icon" href="/assets/icon-256x256.png">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff"/>
-        <title>Page Title</title>
+        <title>RTD</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <style>
@@ -58,25 +54,23 @@
         <button style="position: absolute; display: none;">Active</button>
     </div>
     <div id="pre-processing"></div>
-    <script src="/views/pwa.js"></script>
-    <script type="module">
-        import 'https://cdn.jsdelivr.net/npm/@pwabuilder/pwaupdate';
-        const el = document.createElement('pwa-update');
-        document.body.appendChild(el);
-    </script>
-    <script type="module">
-        import RenderingEngine from '../js/modules/engines/RenderingEngine.js'
-        import Yasuo from '../assets/characters/Yasuo/constructor/Yasuo.js'
-        import Platform from '../assets/map/platform/constructor/Platform.js'
-        import Nexus from '../assets/map/nexus/constructor/Nexus.js'
-        import Turret from '../assets/map/turret/constructor/Turret.js'
-        import Keyboard from '../js/modules/controllers/Keyboard.js'
-        import Touchscreen from '../js/modules/controllers/Touchscreen.js'
-        import '../public_modules/client-dist/socket.io.js'
+    <script src="../assets/effects/constructor/Effects.js"></script>
+    <script src="../assets/effects/constructor/Blood.js"></script>
+    <script src="../js/modules/engines/RenderingEngine.js"></script>
+    <script src="../js/modules/engines/PhysicsEngine.js"></script>
+    <script src="../assets/ui/healthbar/constructor/Healthbar.js"></script>
+    <script src="../assets/entities/minions/red/melee/constructor/MinionRedMelee.js"></script>
+    <script src="../assets/characters/Yasuo/constructor/Yasuo.js"></script>
+    <script src="../assets/map/platform/constructor/Platform.js"></script>
+    <script src="../assets/map/nexus/constructor/Nexus.js"></script>
+    <script src="../assets/map/turret/constructor/Turret.js"></script>
+    <script src="../js/modules/controllers/Keyboard.js"></script>
+    <script src="../js/modules/controllers/Touchscreen.js"></script>
+    <script src="../js/modules/constructors/AI.js"></script>
+    <script>
         function lerp(v0, v1, t) {
             return v0*(1-t)+v1*t
         }
-        const socket = io()
         const Renderer = new RenderingEngine(30)
         class Viewport {
             constructor(canvas) {
@@ -93,7 +87,7 @@
         class Game {
             constructor(data) {
                 this.data = data;
-                this.soundtrack = new Audio('/assets/soundtrack/rift.mp3')
+                this.soundtrack = new Audio('../assets/soundtrack/rift.mp3')
                 this.playSound = {
                     soundtrack: () => {
                         this.soundtrack.volume = 0.5;
@@ -118,7 +112,7 @@
                     this.element.height = 1100;
                     this.element.style.width = '100%';
                     this.element.style.height = '100%';
-                    this.element.style.backgroundImage = "url('/assets/rift.jpg')";
+                    this.element.style.backgroundImage = "url('../assets/rift.jpg')";
                     this.element.style.backgroundSize = "cover"
                     this.element.style.backgroundRepeat = "no-repeat"
 
@@ -151,24 +145,31 @@
             }
             const container = document.getElementById('container')
             const ui = document.getElementById('ui-layer')
-            var canvas,viewport,keyboard,touchscreen,player,platform,nexus,turretL,turretR
+            var canvas,viewport,keyboard,touchscreen,player,platform,nexus,turretL,turretR,minion,bot
             var game = new Game(1)
+            
             function load() {
                 canvas = new Canvas(container);
                 viewport = new Viewport(canvas)
+                physicsEngine = new PhysicsEngine(canvas)
                 canvas.viewport = viewport;
                 keyboard = new Keyboard()
                 touchscreen = new Touchscreen(ui)
+                bot = new AI(canvas)
+                minion = new MinionRedMelee({x: -400,y: 800})
                 touchscreen.connect()
                 player = new Yasuo(touchscreen)
+                enemy = new Yasuo(bot)
+                enemy.pos.x = -1200
                 platform = new Platform({x: -2250,y: 800})
                 nexus = new Nexus({x: 0,y: 700})
-                turretL = new Turret({x: -700,y: 650})
-                turretR = new Turret({x: 700,y: 650})
+                turretL = new Turret({x: -700,y: 650},true)
+                turretR = new Turret({x: 700,y: 650},false)
                 canvas.add(platform)
                 canvas.add(nexus)
                 canvas.add(turretL)
                 canvas.add(turretR)
+                canvas.add(enemy)
                 canvas.add(player)
                 keyboard.connect()
                 Renderer.startAnimating()
@@ -186,9 +187,11 @@
                 touchscreen.selfDestruct()
                 touchscreen = null;
             }   
-            keyboard.logParam = function() {game.playSound.soundtrack()}
-            keyboard.logParam2 = function() {load()} 
+            keyboard.logParam = function() { document.querySelectorAll('video, audio, embed, object').forEach(element => element.volume = 0)}
+            keyboard.logParam2 = function() {player.sufferDamage(100)} 
         Renderer.render = function() {
+            physicsEngine.doPhysics()
+            bot.update()
             game.playSound.soundtrack()
             touchscreen.update()
             viewport.follow(player)
